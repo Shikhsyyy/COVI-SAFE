@@ -1,0 +1,57 @@
+#include <Adafruit_MLX90614.h>
+//#define buzz 10
+#include <Servo.h>
+Adafruit_MLX90614 mlx = Adafruit_MLX90614();
+Servo servo;
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial);
+  Serial.println("Adafruit MLX90614 test");
+
+  if (!mlx.begin()) {
+    Serial.println("Error connecting to MLX sensor. Check wiring.");
+    while (1);
+  };
+
+  Serial.print("Emissivity = "); Serial.println(mlx.readEmissivity());
+  Serial.println("================================================");
+  servo.attach(3);
+}
+
+void loop() {
+
+  Serial.print("Ambient = "); Serial.print(mlx.readAmbientTempC());
+  float temp_c = mlx.readObjectTempC();
+  Serial.print("Object = "); Serial.print(temp_c); Serial.println("*C");
+  if (temp_c>38){  
+//    tone(buzz, 1000); // Send 1KHz sound signal...
+    servo.write(0);
+    delay(500);        // ...for 1 sec
+//    noTone(buzz);
+  }
+  else if(temp_c<35){
+    servo.write(0);
+    }
+  else {
+    int pos;
+    for (pos = 0; pos <= 180; pos += 1){
+      servo.write(pos);                                 // tell servo to go to position in variable 'pos'
+      delay(10);    
+      }
+     delay(2000);
+    for (pos = 180; pos >= 0; pos -= 1){
+      servo.write(pos);
+      delay(10);
+      }
+//   servo.write(90);
+//   delay(1000);
+//   servo.write(180);
+//   delay(1000);
+//   servo.write(90);
+  }
+//  Serial.print("Ambient = "); Serial.print(mlx.readAmbientTempF());
+
+  Serial.println();
+  delay(2000);
+}
